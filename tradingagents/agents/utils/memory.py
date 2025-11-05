@@ -1,23 +1,48 @@
 import chromadb
 from chromadb.config import Settings
 from openai import OpenAI
+import os
+
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
+        self.provider = config.get("llm_provider", "openai").lower()
+        
         if config["backend_url"] == "http://localhost:11434/v1":
             self.embedding = "nomic-embed-text"
+            self.client = OpenAI(base_url=config["backend_url"])
+        elif self.provider == "google":
+            self.embedding = "text-embedding-004"
+            if genai is None:
+                raise ImportError("google-generativeai package is required for Google provider")
+            api_key = os.environ.get("GOOGLE_API_KEY")
+            if not api_key:
+                raise ValueError("GOOGLE_API_KEY environment variable is required when using Google provider")
+            genai.configure(api_key=api_key)
+            self.client = None
         else:
             self.embedding = "text-embedding-3-small"
-        self.client = OpenAI(base_url=config["backend_url"])
+            self.client = OpenAI(base_url=config["backend_url"])
+        
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.create_collection(name=name)
 
     def get_embedding(self, text):
-        """Get OpenAI embedding for a text"""
+        """Get embedding for a text"""
 
-        response = self.client.embeddings.create(model=self.embedding, input=text)
-        return response.data[0].embedding
+        if self.provider == "google":
+            result = genai.embed_content(
+                model=self.embedding, content=text, task_type="retrieval_document"
+            )
+            return result["embedding"]
+        else:
+            response = self.client.embeddings.create(model=self.embedding, input=text)
+            return response.data[0].embedding
 
     def add_situations(self, situations_and_advice):
         """Add financial situations and their corresponding advice. Parameter is a list of tuples (situation, rec)"""
