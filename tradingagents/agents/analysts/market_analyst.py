@@ -1,7 +1,11 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 import json
-from tradingagents.agents.utils.agent_utils import get_stock_data, get_indicators, LANGUAGE_INSTRUCTION
+from tradingagents.agents.utils.agent_utils import (
+    get_stock_data,
+    get_indicators,
+    LANGUAGE_INSTRUCTION,
+)
 from tradingagents.dataflows.config import get_config
 
 
@@ -77,7 +81,7 @@ Volume-Based Indicators:
 
         if len(result.tool_calls) == 0:
             report = result.content
-       
+
         return {
             "messages": [result],
             "market_report": report,
