@@ -12,23 +12,27 @@ except ImportError:
 class FinancialSituationMemory:
     def __init__(self, name, config):
         self.provider = config.get("llm_provider", "openai").lower()
-        
+
         if config["backend_url"] == "http://localhost:11434/v1":
             self.embedding = "nomic-embed-text"
             self.client = OpenAI(base_url=config["backend_url"])
         elif self.provider == "google":
             self.embedding = "text-embedding-004"
             if genai is None:
-                raise ImportError("google-generativeai package is required for Google provider")
+                raise ImportError(
+                    "google-generativeai package is required for Google provider"
+                )
             api_key = os.environ.get("GOOGLE_API_KEY")
             if not api_key:
-                raise ValueError("GOOGLE_API_KEY environment variable is required when using Google provider")
+                raise ValueError(
+                    "GOOGLE_API_KEY environment variable is required when using Google provider"
+                )
             genai.configure(api_key=api_key)
             self.client = None
         else:
             self.embedding = "text-embedding-3-small"
             self.client = OpenAI(base_url=config["backend_url"])
-        
+
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.create_collection(name=name)
 

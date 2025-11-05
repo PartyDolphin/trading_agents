@@ -90,6 +90,8 @@ class MessageBuffer:
 
     def update_report_section(self, section_name, content):
         if section_name in self.report_sections:
+            if content is not None and not isinstance(content, str):
+                content = str(content)
             self.report_sections[section_name] = content
             self._update_current_report()
 
@@ -801,8 +803,10 @@ def run_analysis():
             ):
                 content = obj.report_sections[section_name]
                 if content:
+                    if not isinstance(content, str):
+                        content = str(content)
                     file_name = f"{section_name}.md"
-                    with open(report_dir / file_name, "w") as f:
+                    with open(report_dir / file_name, "w", encoding="utf-8") as f:
                         f.write(content)
 
         return wrapper
