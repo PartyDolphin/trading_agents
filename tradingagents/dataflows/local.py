@@ -396,15 +396,22 @@ def get_reddit_global_news(
     total_iterations = (curr_date_dt - curr_iter_date).days + 1
     pbar = tqdm(desc=f"Getting Global News on {curr_date}", total=total_iterations)
 
+    reddit_data_path = os.path.join(DATA_DIR, "reddit_data")
+    global_news_path = os.path.join(reddit_data_path, "global_news")
+    os.makedirs(global_news_path, exist_ok=True)
+
     while curr_iter_date <= curr_date_dt:
         curr_date_str = curr_iter_date.strftime("%Y-%m-%d")
-        fetch_result = fetch_top_from_category(
-            "global_news",
-            curr_date_str,
-            limit,
-            data_path=os.path.join(DATA_DIR, "reddit_data"),
-        )
-        posts.extend(fetch_result)
+        try:
+            fetch_result = fetch_top_from_category(
+                "global_news",
+                curr_date_str,
+                limit,
+                data_path=reddit_data_path,
+            )
+            posts.extend(fetch_result)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"WARNING: Failed to fetch Reddit data for {curr_date_str}: {e}")
         curr_iter_date += relativedelta(days=1)
         pbar.update(1)
 
