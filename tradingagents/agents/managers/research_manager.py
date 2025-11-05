@@ -1,5 +1,6 @@
 import time
 import json
+from tradingagents.agents.utils.agent_utils import LANGUAGE_INSTRUCTION
 
 
 def create_research_manager(llm, memory):
@@ -35,7 +36,8 @@ Here are your past reflections on mistakes:
 
 Here is the debate:
 Debate History:
-{history}"""
+{history}
+{LANGUAGE_INSTRUCTION}"""
         response = llm.invoke(prompt)
 
         new_investment_debate_state = {

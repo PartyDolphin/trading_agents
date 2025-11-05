@@ -20,6 +20,8 @@ from tradingagents.agents.utils.news_data_tools import (
     get_global_news
 )
 
+LANGUAGE_INSTRUCTION = "Important: Reply report in Chinese"
+
 def create_msg_delete():
     def delete_messages(state):
         """Clear messages and add placeholder for Anthropic compatibility"""

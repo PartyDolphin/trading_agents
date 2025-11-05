@@ -21,6 +21,7 @@ from tradingagents.agents.utils.agent_states import (
     RiskDebateState,
 )
 from tradingagents.dataflows.config import set_config
+from tradingagents.agents.utils import agent_utils
 
 # Import the new abstract tool methods from agent_utils
 from tradingagents.agents.utils.agent_utils import (
@@ -64,6 +65,14 @@ class TradingAgentsGraph:
 
         # Update the interface's config
         set_config(self.config)
+        
+        # Set language instruction based on config
+        language = self.config.get("report_language", "english").lower()
+        if language == "english":
+            agent_utils.LANGUAGE_INSTRUCTION = ""
+        else:
+            language_name = language.capitalize()
+            agent_utils.LANGUAGE_INSTRUCTION = f" IMPORTANT: All your responses, reports, and analysis must be written in {language_name}."
 
         # Create necessary directories
         os.makedirs(

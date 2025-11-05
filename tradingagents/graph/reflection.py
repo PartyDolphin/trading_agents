@@ -2,6 +2,7 @@
 
 from typing import Dict, Any
 from langchain_openai import ChatOpenAI
+from tradingagents.agents.utils.agent_utils import LANGUAGE_INSTRUCTION
 
 
 class Reflector:
@@ -43,7 +44,7 @@ Your goal is to deliver detailed insights into investment decisions and highligh
    - Extract key insights from the summary into a concise sentence of no more than 1000 tokens.
    - Ensure the condensed sentence captures the essence of the lessons and reasoning for easy reference.
 
-Adhere strictly to these instructions, and ensure your output is detailed, accurate, and actionable. You will also be given objective descriptions of the market from a price movements, technical indicator, news, and sentiment perspective to provide more context for your analysis.
+Adhere strictly to these instructions, and ensure your output is detailed, accurate, and actionable. You will also be given objective descriptions of the market from a price movements, technical indicator, news, and sentiment perspective to provide more context for your analysis.{LANGUAGE_INSTRUCTION}
 """
 
     def _extract_current_situation(self, current_state: Dict[str, Any]) -> str:
